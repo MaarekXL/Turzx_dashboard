@@ -9,6 +9,10 @@ This project is intentionally small: it keeps only the parts required to drive t
 
 ## Preview
 
+<p align="center">
+  <img src="preview.png" alt="TURZX Dashboard preview" width="480">
+</p>
+
 The dashboard is designed for a 3.5" display in landscape mode:
 
 - CPU usage, package temperature, package power and clock
