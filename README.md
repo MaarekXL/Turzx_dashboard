@@ -1,28 +1,85 @@
 # TURZX Dashboard
 
-A lightweight **480×320 cyber-style hardware monitor** for the **UsbPCMonitor / TURZX-style 3.5" display (Hardware Revision A)**.
+A lightweight **480×320 hardware monitor** for the **UsbPCMonitor / TURZX-style 3.5" display (Hardware Revision A)**.
 
-This project is intentionally small: it keeps only the parts required to drive the 3.5" serial display and collect system telemetry on Windows.
+This project is intentionally small: it keeps only the components required to drive the 3.5" serial display and collect system telemetry on Windows.
 
 > [!IMPORTANT]
 > This project is **not affiliated with TURZX, Turing, XuanFang, UsbPCMonitor, or their manufacturers/sellers**.
 
-## Preview
+## Themes
+
+Several dashboard styles are available.
+
+### Cyber Dashboard
+
+The original cyber-style dashboard with green/cyan telemetry, compact system panels and partial LCD updates.
 
 <p align="center">
-  <img src="preview.png" alt="TURZX Dashboard preview" width="480">
+  <img src="preview.png" alt="TURZX Cyber Dashboard preview" width="480">
 </p>
 
-The dashboard is designed for a 3.5" display in landscape mode:
+Run:
 
-- CPU usage, package temperature, package power and clock
-- NVIDIA GPU usage, temperature, power and clock
-- RAM and VRAM usage
+```powershell
+python turzx_dashboard.py --com COM3
+```
+
+---
+
+### Apollo Core
+
+A retro **Apollo / NASA mission-control inspired** theme with amber instrumentation, guidance-style panels and a clean avionics look.
+
+<p align="center">
+  <img src="preview_apollo.png" alt="TURZX Apollo Core preview" width="480">
+</p>
+
+Run:
+
+```powershell
+python turzx_dashboard_apollo.py --com COM3
+```
+
+---
+
+### BIOS Demon Core
+
+A darker illustrated theme inspired by a corrupted BIOS / occult terminal interface.
+
+<p align="center">
+  <img src="preview_demon.png" alt="TURZX BIOS Demon Core preview" width="480">
+</p>
+
+Run:
+
+```powershell
+python turzx_dashboard_demon.py --com COM3
+```
+
+---
+
+## Features
+
+All themes use the same telemetry backend and support:
+
+- CPU usage
+- CPU package temperature
+- CPU package power
+- CPU clock
+- CPU fan speed when exposed by LibreHardwareMonitor
+- NVIDIA GPU usage
+- GPU temperature
+- GPU power
+- GPU clock
+- VRAM usage
+- RAM usage
 - Network throughput
 - Storage usage
-- Hostname, Windows version and uptime
-- CPU fan speed when exposed by LibreHardwareMonitor
-- Live centered clock
+- Hostname
+- Windows version
+- System uptime
+- Live clock
 - Partial LCD updates to reduce unnecessary serial traffic
 
 ## Hardware tested
@@ -50,15 +107,21 @@ nvidia-ml-py
 
 NVIDIA telemetry is read through NVML.
 
-CPU temperature, package power and fan telemetry are read through **LibreHardwareMonitor**. On Windows, running the program with administrator privileges may be required for hardware sensor access.
+CPU temperature, package power and fan telemetry are read through **LibreHardwareMonitor**.
+
+On Windows, running the program or PyCharm with administrator privileges may be required for full hardware sensor access.
 
 ## Installation
 
 Clone the repository and create a virtual environment:
 
 ```powershell
+git clone https://github.com/MaarekXL/Turzx_dashboard.git
+cd Turzx_dashboard
+
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
@@ -67,41 +130,43 @@ Close the original `UsbPCMonitor.exe` application before starting the dashboard 
 
 ## Usage
 
-Automatic COM-port detection:
+### Automatic COM-port detection
 
 ```powershell
 python turzx_dashboard.py
 ```
 
-Specify the display port manually:
+### Specify the display port manually
 
 ```powershell
 python turzx_dashboard.py --com COM3
 ```
 
-Generate a preview without writing to the LCD:
+### Generate a preview without writing to the LCD
 
 ```powershell
 python turzx_dashboard.py --preview
 ```
 
-Generate a preview using live system sensors:
+### Generate a preview using live system sensors
 
 ```powershell
 python turzx_dashboard.py --live-preview
 ```
 
-Set brightness:
+### Set brightness
 
 ```powershell
 python turzx_dashboard.py --brightness 30
 ```
 
-Set refresh period:
+### Set refresh period
 
 ```powershell
 python turzx_dashboard.py --refresh 1.0
 ```
+
+The same command-line options are available for the theme variants unless otherwise noted.
 
 ## Project structure
 
@@ -110,6 +175,7 @@ TURZX-Dashboard/
 ├── external/
 │   ├── LibreHardwareMonitor/
 │   └── PawnIO/
+│
 ├── library/
 │   ├── lcd/
 │   │   ├── color.py
@@ -118,19 +184,33 @@ TURZX-Dashboard/
 │   │   └── serialize.py
 │   ├── LICENSE
 │   └── log.py
-├── .gitignore
+│
 ├── LICENSE
 ├── requirements.txt
-└── turzx_dashboard.py
+│
+├── turzx_dashboard.py
+├── turzx_dashboard_apollo.py
+├── turzx_dashboard_demon.py
+│
+├── apollo_background.png
+├── demon_background.png
+│
+├── preview.png
+├── preview_apollo.png
+├── preview_demon.png
+│
+└── README.md
 ```
 
 ## Design
 
-The dashboard is rendered directly with Pillow at **480×320**.
+The dashboards are rendered directly with Pillow at **480×320**.
 
-The LCD is not used as a Windows secondary monitor. Frames are sent through the display protocol over USB serial.
+The LCD is **not** used as a Windows secondary monitor. Frames are sent directly through the display protocol over USB serial.
 
-After the initial full frame, the program compares dynamic regions against the previous frame and only sends changed image patches. This keeps USB/serial traffic lower than continuously transmitting the complete screen.
+After the initial full frame, the program compares dynamic regions against the previous frame and only sends changed image patches.
+
+This reduces USB/serial traffic compared with continuously transmitting the complete display.
 
 ## Credits and upstream project
 
